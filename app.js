@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const grid = document.querySelector('.grid')
+    const grid = document.querySelector('.grid');
     const width = 8
     const squares = []
 
@@ -20,6 +20,8 @@ document.addEventListener('DOMContentLoaded', () => {
         for(let i = 0; i < width * width; i++) {
             const square = document.createElement('div');
             //let randomFruit = Math.floor(Math.random() * fruitArray.length)
+            square.setAttribute('draggable', true)
+            square.setAttribute('id', i)
             square.style.backgroundImage = randomFruit()
             grid.appendChild(square);
             squares.push(square);
@@ -30,7 +32,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     //drag the fruits
 
-    let fruitBeingDragged;
+    let fruitBeingDragged
+let fruitBeingReplaced
+let squareIdBeingDragged
+let squareIdBeingReplaced
+
     squares.forEach(square => square.addEventListener('dragstart', dragStart));
     squares.forEach(square => square.addEventListener('dragend', dragEnd));
     squares.forEach(square => square.addEventListener('dragover', dragOver));
@@ -40,27 +46,52 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function dragStart(){
         fruitBeingDragged = this.style.backgroundImage;
+        squareIdBeingDragged = parseInt(this.id)
         console.log(fruitBeingDragged)
-        console.log(this.id, 'dragstart');
+        console.log(parseInt(this.id), 'dragstart');
     }
 
-    function dragEnd(){
-        console.log(this.id, 'dragend');
-    }
-
-    function dragOver(){
+    function dragOver(e){
+        e.preventDefault();
         console.log(this.id, 'dragover');
     }
 
-    function dragEnter(){
+    function dragEnter(e){
+        e.preventDefault();
         console.log(this.id, 'dragenter');
     }
 
     function dragLeave(){
+        this.style.backgroundImage = ''
         console.log(this.id, 'dragleave');
     }
 
     function dragDrop(){
         console.log(this.id, 'drop');
+        fruitBeingReplaced = this.style.backgroundImage
+        squareIdBeingReplaced = parseInt(this.id)
+        this.style.backgroundImage = fruitBeingDragged
+        squares[squareIdBeingDragged].style.backgroundImage = fruitBeingReplaced
+    }
+
+    function dragEnd(){
+        console.log(this.id, 'dragend');
+        let validMoves = [
+            squareIdBeingDragged -1,
+            squareIdBeingDragged -width,
+            squareIdBeingDragged +1,
+            squareIdBeingDragged +width
+        ]
+
+        let validMove = validMoves.includes(squareIdBeingReplaced)
+
+        if (squareIdBeingReplaced && validMove){
+            squareIdBeingReplaced = null
+        } else if (squareIdBeingReplaced && !validMove) {
+            squares[squareIdBeingReplaced].style.backgroundImage = fruitBeingReplaced
+            squares[squareIdBeingDragged].style.backgroundImage = fruitBeingDragged
+        } else {
+            squares[squareIdBeingDragged].style.backgroundImage = fruitBeingDragged
+        }
     }
 })
