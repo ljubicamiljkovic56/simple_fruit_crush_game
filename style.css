@@ -1,3 +1,6 @@
+body {
+    background-color: antiquewhite;
+}
 .grid {
     height: 560px;
     width: 560px;
@@ -11,6 +14,6 @@
     width: 70px;
 }
 
-h1 {
+h1, h2 {
     text-align: center;
 }
